@@ -1,0 +1,61 @@
+body{
+    font-family:'Poppins',sans-serif;
+    background:#f8fafc;
+}
+
+.sidebar{
+    width:250px;
+    height:100vh;
+    background:white;
+    position:fixed;
+    left:0;
+    top:0;
+    padding:30px;
+    box-shadow:0 0 20px rgba(0,0,0,.05);
+}
+
+.logo{
+    color:#22C55E;
+    font-weight:700;
+    margin-bottom:40px;
+}
+
+.sidebar a{
+    display:block;
+    text-decoration:none;
+    color:#334155;
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:10px;
+    transition:0.3s;
+}
+
+.sidebar a:hover{
+    background:#DCFCE7;
+    color:#22C55E;
+}
+
+.main-content{
+    margin-left:280px;
+    padding:30px;
+}
+
+.card-eco{
+    border:none;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.05);
+}
+
+.coin-card{
+    background:linear-gradient(
+    135deg,
+    #22C55E,
+    #4ADE80
+    );
+    color:white;
+}
+
+.stat-number{
+    font-size:32px;
+    font-weight:700;
+}

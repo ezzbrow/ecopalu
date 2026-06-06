@@ -1,33 +1,29 @@
-<div class="col-md-2 bg-white shadow-sm vh-100">
+<div class="sidebar">
 
-    <div class="list-group mt-3">
+    <h3 class="logo">
+        ♻ EcoPalu
+    </h3>
 
-        <a href="<?= base_url('/') ?>"
-           class="list-group-item list-group-item-action">
-            Dashboard
-        </a>
+    <a href="#">
+        <i class="bi bi-house"></i>
+        Dashboard
+    </a>
 
-        <a href="<?= base_url('users') ?>"
-           class="list-group-item list-group-item-action">
-            User
-        </a>
+    <a href="<?= base_url('kategori-sampah') ?>">
+        <i class="bi bi-recycle"></i>
+        Kategori Sampah
+    </a>
 
-        <a href="<?= base_url('kategori-sampah') ?>"
-           class="list-group-item list-group-item-action">
-            Kategori Sampah
-        </a>
+    <a href="<?= base_url('penjemputan') ?>">
+        <i class="bi bi-truck"></i>
+        Penjemputan
+    </a>
 
-        <a href="<?= base_url('penjemputan') ?>"
-           class="list-group-item list-group-item-action">
-            Penjemputan
-        </a>
+    <a href="<?= base_url('transaksi-coin') ?>">
+        <i class="bi bi-coin"></i>
+        Coin
+    </a>
 
-        <a href="<?= base_url('transaksi-coin') ?>"
-           class="list-group-item list-group-item-action">
-            Transaksi Coin
-        </a>
-
-    </div>
 </div>
 
-<div class="col-md-10 content">
+<div class="main-content">
