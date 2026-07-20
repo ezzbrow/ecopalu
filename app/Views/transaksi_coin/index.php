@@ -1,63 +1,74 @@
-<?= $this->include('layouts/header') ?>
-<?= $this->include('layouts/sidebar') ?>
+<?= $this->extend('layouts/main') ?>
 
-<div class="d-flex justify-content-between mb-3">
+<?= $this->section('content') ?>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
 
     <h2>Transaksi Coin</h2>
 
     <a href="<?= base_url('transaksi-coin/create') ?>"
-       class="btn btn-eco">
+       class="btn btn-success">
        Tambah Transaksi
     </a>
 
 </div>
 
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
 
-<thead>
-<tr>
-    <th>ID</th>
-    <th>User ID</th>
-    <th>Coin Masuk</th>
-    <th>Coin Keluar</th>
-    <th>Saldo Akhir</th>
-    <th>Keterangan</th>
-    <th>Aksi</th>
-</tr>
-</thead>
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>User ID</th>
+            <th>Kategori Sampah ID</th>
+            <th>Berat (Kg)</th>
+            <th>Total Coin</th>
+            <th width="180">Aksi</th>
+        </tr>
+    </thead>
 
-<tbody>
+    <tbody>
 
-<?php foreach($transaksi as $item): ?>
+    <?php if(!empty($transaksi)): ?>
 
-<tr>
+        <?php foreach($transaksi as $item): ?>
 
-    <td><?= $item['id'] ?></td>
-    <td><?= $item['user_id'] ?></td>
-    <td><?= $item['coin_masuk'] ?></td>
-    <td><?= $item['coin_keluar'] ?></td>
-    <td><?= $item['saldo_akhir'] ?></td>
-    <td><?= $item['keterangan'] ?></td>
+        <tr>
 
-    <td>
+            <td><?= $item['id'] ?></td>
+            <td><?= $item['user_id'] ?></td>
+            <td><?= $item['kategori_sampah_id'] ?></td>
+            <td><?= $item['berat'] ?></td>
+            <td><?= $item['total_coin'] ?></td>
 
-        <a href="<?= base_url('transaksi-coin/edit/'.$item['id']) ?>"
-           class="btn btn-warning btn-sm">
-           Edit
-        </a>
+            <td>
+                <a href="<?= base_url('transaksi-coin/edit/'.$item['id']) ?>"
+                   class="btn btn-warning btn-sm">
+                   Edit
+                </a>
 
-        <a href="<?= base_url('transaksi-coin/delete/'.$item['id']) ?>"
-           class="btn btn-danger btn-sm">
-           Hapus
-        </a>
+                <a href="<?= base_url('transaksi-coin/delete/'.$item['id']) ?>"
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Yakin ingin menghapus data ini?')">
+                   Hapus
+                </a>
+            </td>
 
-    </td>
+        </tr>
 
-</tr>
+        <?php endforeach; ?>
 
-<?php endforeach; ?>
+    <?php else: ?>
 
-</tbody>
+        <tr>
+            <td colspan="6" class="text-center">
+                Belum ada data transaksi coin
+            </td>
+        </tr>
+
+    <?php endif; ?>
+
+    </tbody>
+
 </table>
 
-<?= $this->include('layouts/footer') ?>
+<?= $this->endSection() ?>

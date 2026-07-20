@@ -1,48 +1,51 @@
-<?= $this->include('layouts/header') ?>
-<?= $this->include('layouts/sidebar') ?>
+<?= $this->extend('layouts/main') ?>
+
+<?= $this->section('content') ?>
 
 <h2>Edit Transaksi Coin</h2>
 
 <form action="<?= base_url('transaksi-coin/update/'.$transaksi['id']) ?>" method="post">
 
     <div class="mb-3">
-        <label>Coin Masuk</label>
+        <label class="form-label">Kategori Sampah ID</label>
 
         <input type="number"
-               name="coin_masuk"
-               value="<?= $transaksi['coin_masuk'] ?>"
-               class="form-control">
+               name="kategori_sampah_id"
+               value="<?= $transaksi['kategori_sampah_id'] ?>"
+               class="form-control"
+               required>
     </div>
 
     <div class="mb-3">
-        <label>Coin Keluar</label>
+        <label class="form-label">Berat (Kg)</label>
 
         <input type="number"
-               name="coin_keluar"
-               value="<?= $transaksi['coin_keluar'] ?>"
-               class="form-control">
+               step="0.01"
+               name="berat"
+               value="<?= $transaksi['berat'] ?>"
+               class="form-control"
+               required>
     </div>
 
     <div class="mb-3">
-        <label>Saldo Akhir</label>
+        <label class="form-label">Total Coin</label>
 
         <input type="number"
-               name="saldo_akhir"
-               value="<?= $transaksi['saldo_akhir'] ?>"
-               class="form-control">
+               name="total_coin"
+               value="<?= $transaksi['total_coin'] ?>"
+               class="form-control"
+               required>
     </div>
 
-    <div class="mb-3">
-        <label>Keterangan</label>
-
-        <textarea name="keterangan"
-                  class="form-control"><?= $transaksi['keterangan'] ?></textarea>
-    </div>
-
-    <button class="btn btn-eco">
+    <button type="submit" class="btn btn-eco">
         Update
     </button>
 
+    <a href="<?= base_url('transaksi-coin') ?>"
+       class="btn btn-secondary">
+       Kembali
+    </a>
+
 </form>
 
-<?= $this->include('layouts/footer') ?>
+<?= $this->endSection() ?>

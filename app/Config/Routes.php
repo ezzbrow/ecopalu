@@ -38,6 +38,13 @@ $routes->get('/penjemputan/edit/(:num)', 'PenjemputanController::edit/$1');
 $routes->post('/penjemputan/update/(:num)', 'PenjemputanController::update/$1');
 $routes->get('/penjemputan/delete/(:num)', 'PenjemputanController::delete/$1');
 
+// Aksi role-based
+$routes->post('/penjemputan/setujui/(:num)',          'PenjemputanController::setujui/$1');
+$routes->post('/penjemputan/tolak/(:num)',             'PenjemputanController::tolak/$1');
+$routes->post('/penjemputan/konfirmasi-selesai/(:num)', 'PenjemputanController::konfirmasiSelesai/$1');
+$routes->post('/penjemputan/finalisasi-poin/(:num)',   'PenjemputanController::finalisasiPoin/$1');
+$routes->post('/penjemputan/tolak-poin/(:num)',        'PenjemputanController::tolakPoin/$1');
+
 
 // =====================
 // TRANSAKSI COIN

@@ -1,48 +1,53 @@
-<?= $this->include('layouts/header') ?>
-<?= $this->include('layouts/sidebar') ?>
+<?= $this->extend('layouts/main') ?>
+
+<?= $this->section('content') ?>
 
 <h2>Tambah Transaksi Coin</h2>
 
 <form action="<?= base_url('transaksi-coin/store') ?>" method="post">
 
     <div class="mb-3">
-        <label>User ID</label>
+        <label class="form-label">User ID</label>
         <input type="number"
                name="user_id"
-               class="form-control">
+               class="form-control"
+               required>
     </div>
 
     <div class="mb-3">
-        <label>Coin Masuk</label>
+        <label class="form-label">Kategori Sampah ID</label>
         <input type="number"
-               name="coin_masuk"
-               class="form-control">
+               name="kategori_sampah_id"
+               class="form-control"
+               required>
     </div>
 
     <div class="mb-3">
-        <label>Coin Keluar</label>
+        <label class="form-label">Berat (Kg)</label>
         <input type="number"
-               name="coin_keluar"
-               class="form-control">
+               step="0.01"
+               name="berat"
+               class="form-control"
+               required>
     </div>
 
     <div class="mb-3">
-        <label>Saldo Akhir</label>
+        <label class="form-label">Total Coin</label>
         <input type="number"
-               name="saldo_akhir"
-               class="form-control">
+               name="total_coin"
+               class="form-control"
+               required>
     </div>
 
-    <div class="mb-3">
-        <label>Keterangan</label>
-        <textarea name="keterangan"
-                  class="form-control"></textarea>
-    </div>
-
-    <button class="btn btn-eco">
+    <button type="submit" class="btn btn-eco">
         Simpan
     </button>
 
+    <a href="<?= base_url('transaksi-coin') ?>"
+       class="btn btn-secondary">
+       Kembali
+    </a>
+
 </form>
 
-<?= $this->include('layouts/footer') ?>
+<?= $this->endSection() ?>

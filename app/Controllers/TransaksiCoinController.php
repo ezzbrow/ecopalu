@@ -27,11 +27,10 @@ class TransaksiCoinController extends BaseController
     public function store()
     {
         $this->transaksiModel->save([
-            'user_id'       => $this->request->getPost('user_id'),
-            'coin_masuk'    => $this->request->getPost('coin_masuk'),
-            'coin_keluar'   => $this->request->getPost('coin_keluar'),
-            'saldo_akhir'   => $this->request->getPost('saldo_akhir'),
-            'keterangan'    => $this->request->getPost('keterangan')
+            'user_id'           => $this->request->getPost('user_id'),
+            'kategori_sampah_id' => $this->request->getPost('kategori_sampah_id'),
+            'berat'             => $this->request->getPost('berat'),
+            'total_coin'        => $this->request->getPost('total_coin'),
         ]);
 
         return redirect()->to('/transaksi-coin');
@@ -46,10 +45,9 @@ class TransaksiCoinController extends BaseController
     public function update($id)
     {
         $this->transaksiModel->update($id, [
-            'coin_masuk'  => $this->request->getPost('coin_masuk'),
-            'coin_keluar' => $this->request->getPost('coin_keluar'),
-            'saldo_akhir' => $this->request->getPost('saldo_akhir'),
-            'keterangan'  => $this->request->getPost('keterangan')
+            'kategori_sampah_id' => $this->request->getPost('kategori_sampah_id'),
+            'berat'             => $this->request->getPost('berat'),
+            'total_coin'        => $this->request->getPost('total_coin'),
         ]);
 
         return redirect()->to('/transaksi-coin');

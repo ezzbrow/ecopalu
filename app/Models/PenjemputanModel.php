@@ -16,9 +16,21 @@ class PenjemputanModel extends Model
 
     protected $allowedFields = [
         'user_id',
+        'kategori_sampah_id',
+        'berat',
         'tanggal_jemput',
         'alamat',
-        'status'
+        'latitude',
+        'longitude',
+        'status',
+        'verified_by',
+        'verified_at',
+        'alasan_penolakan',
+        'confirmed_by',
+        'confirmed_at',
+        'coin_award',
+        'coin_awarded_at',
+        'finalized_by',
     ];
 
     protected $useTimestamps = true;
