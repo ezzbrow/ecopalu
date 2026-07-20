@@ -1,5 +1,6 @@
-<?= $this->include('layouts/header') ?>
-<?= $this->include('layouts/sidebar') ?>
+<?= $this->extend('layouts/main') ?>
+
+<?= $this->section('content') ?>
 
 <h2>Edit User</h2>
 
@@ -23,14 +24,12 @@
         <label>Role</label>
         <select name="role" class="form-control">
 
-            <option value="user"
-            <?= $user['role']=='user'?'selected':'' ?>>
-            User
+            <option value="user" <?= $user['role']=='user'?'selected':'' ?>>
+                User
             </option>
 
-            <option value="admin"
-            <?= $user['role']=='admin'?'selected':'' ?>>
-            Admin
+            <option value="admin" <?= $user['role']=='admin'?'selected':'' ?>>
+                Admin
             </option>
 
         </select>
@@ -40,4 +39,4 @@
 
 </form>
 
-<?= $this->include('layouts/footer') ?>
+<?= $this->endSection() ?>

@@ -1,5 +1,6 @@
-<?= $this->include('layouts/header') ?>
-<?= $this->include('layouts/sidebar') ?>
+<?= $this->extend('layouts/main') ?>
+
+<?= $this->section('content') ?>
 
 <h2>Tambah User</h2>
 
@@ -32,4 +33,4 @@
 
 </form>
 
-<?= $this->include('layouts/footer') ?>
+<?= $this->endSection() ?>

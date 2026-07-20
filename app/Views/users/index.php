@@ -1,12 +1,12 @@
-<?= $this->include('layouts/header') ?>
-<?= $this->include('layouts/sidebar') ?>
+<?= $this->extend('layouts/main') ?>
+
+<?= $this->section('content') ?>
 
 <div class="d-flex justify-content-between mb-3">
     <h2>Data User</h2>
 
-    <a href="<?= base_url('users/create') ?>"
-       class="btn btn-eco">
-       Tambah User
+    <a href="<?= base_url('users/create') ?>" class="btn btn-eco">
+        Tambah User
     </a>
 </div>
 
@@ -23,34 +23,20 @@
     </thead>
 
     <tbody>
-
-    <?php foreach($users as $user): ?>
-
-    <tr>
-        <td><?= $user['id'] ?></td>
-        <td><?= $user['name'] ?></td>
-        <td><?= $user['email'] ?></td>
-        <td><?= $user['role'] ?></td>
-
-        <td>
-
-            <a href="<?= base_url('users/edit/'.$user['id']) ?>"
-               class="btn btn-warning btn-sm">
-               Edit
-            </a>
-
-            <a href="<?= base_url('users/delete/'.$user['id']) ?>"
-               class="btn btn-danger btn-sm">
-               Hapus
-            </a>
-
-        </td>
-    </tr>
-
-    <?php endforeach; ?>
-
+        <?php foreach($users as $user): ?>
+        <tr>
+            <td><?= $user['id'] ?></td>
+            <td><?= $user['name'] ?></td>
+            <td><?= $user['email'] ?></td>
+            <td><?= $user['role'] ?></td>
+            <td>
+                <a href="<?= base_url('users/edit/'.$user['id']) ?>" class="btn btn-warning btn-sm">Edit</a>
+                <a href="<?= base_url('users/delete/'.$user['id']) ?>" class="btn btn-danger btn-sm">Hapus</a>
+            </td>
+        </tr>
+        <?php endforeach; ?>
     </tbody>
 
 </table>
 
-<?= $this->include('layouts/footer') ?>
+<?= $this->endSection() ?>

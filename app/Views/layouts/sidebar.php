@@ -4,9 +4,14 @@
         ♻ EcoPalu
     </h3>
 
-    <a href="#">
+    <a href="<?= base_url('/') ?>">
         <i class="bi bi-house"></i>
         Dashboard
+    </a>
+
+    <a href="<?= base_url('users') ?>">
+        <i class="bi bi-people"></i>
+        User
     </a>
 
     <a href="<?= base_url('kategori-sampah') ?>">
@@ -21,9 +26,7 @@
 
     <a href="<?= base_url('transaksi-coin') ?>">
         <i class="bi bi-coin"></i>
-        Coin
+        Transaksi Coin
     </a>
 
 </div>
-
-<div class="main-content">

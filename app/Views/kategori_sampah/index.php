@@ -1,52 +1,69 @@
-<?= $this->include('layouts/header') ?>
-<?= $this->include('layouts/sidebar') ?>
+<?= $this->extend('layouts/main') ?>
 
-<div class="d-flex justify-content-between mb-3">
+<?= $this->section('content') ?>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
     <h2>Kategori Sampah</h2>
 
     <a href="<?= base_url('kategori-sampah/create') ?>"
        class="btn btn-eco">
        Tambah Kategori
     </a>
+
 </div>
 
-<table class="table table-bordered">
+<table class="table table-bordered table-striped">
 
-<thead>
-<tr>
-    <th>ID</th>
-    <th>Nama Kategori</th>
-    <th>Coin</th>
-    <th>Aksi</th>
-</tr>
-</thead>
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nama Kategori</th>
+            <th>Coin</th>
+            <th width="180">Aksi</th>
+        </tr>
+    </thead>
 
-<tbody>
+    <tbody>
 
-<?php foreach($kategori as $item): ?>
+    <?php if(!empty($kategori)): ?>
 
-<tr>
-    <td><?= $item['id'] ?></td>
-    <td><?= $item['nama_kategori'] ?></td>
-    <td><?= $item['coin_value'] ?></td>
+        <?php foreach($kategori as $item): ?>
 
-    <td>
-        <a href="<?= base_url('kategori-sampah/edit/'.$item['id']) ?>"
-            class="btn btn-warning btn-sm">
-            Edit
-        </a>
+        <tr>
+            <td><?= $item['id'] ?></td>
+            <td><?= $item['nama_kategori'] ?></td>
+            <td><?= $item['coin_value'] ?></td>
 
-        <a href="<?= base_url('kategori-sampah/delete/'.$item['id']) ?>"
-            class="btn btn-danger btn-sm">
-            Hapus
-        </a>
-    </td>
+            <td>
+                <a href="<?= base_url('kategori-sampah/edit/'.$item['id']) ?>"
+                   class="btn btn-warning btn-sm">
+                   Edit
+                </a>
 
-</tr>
+                <a href="<?= base_url('kategori-sampah/delete/'.$item['id']) ?>"
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Yakin ingin menghapus data ini?')">
+                   Hapus
+                </a>
+            </td>
 
-<?php endforeach; ?>
+        </tr>
 
-</tbody>
+        <?php endforeach; ?>
+
+    <?php else: ?>
+
+        <tr>
+            <td colspan="4" class="text-center">
+                Belum ada data kategori sampah
+            </td>
+        </tr>
+
+    <?php endif; ?>
+
+    </tbody>
+
 </table>
 
-<?= $this->include('layouts/footer') ?>
+<?= $this->endSection() ?>

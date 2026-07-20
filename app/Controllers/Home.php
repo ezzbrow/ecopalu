@@ -10,6 +10,10 @@ class Home extends BaseController
     {
         $model = new KategoriSampahModel();
 
-        dd($model->findAll());
+        $data = [
+            'kategori' => $model->findAll()
+        ];
+
+        return view('home', $data);
     }
 }
