@@ -62,7 +62,7 @@
                         <small>Syarat Pencairan</small>
                     </div>
                     <p class="mb-0 small text-muted">
-                        Minimal pencairan <strong>50kg</strong>, setara ± 1.600–1.700 botol plastik 1,5L.
+                        Minimal pencairan <strong>5kg</strong> (setara <strong>25 coin = Rp 10.000</strong>).
                         Poin dicairkan manual oleh Admin EcoPalu ke e-wallet Anda.
                     </p>
                 </div>
@@ -142,19 +142,23 @@
         </div>
     </div>
 
-    <!-- ============== E. REWARD & POIN (placeholder alert-info) ============== -->
+    <!-- ============== E. REWARD & POIN (active link ke /pencairan) ============== -->
     <div class="card section-card mb-4">
         <div class="card-body">
-            <h5 class="mb-3">
-                <i class="bi bi-cash-coin text-success me-2"></i>
-                Reward & Poin
-            </h5>
-            <div class="alert alert-info mb-0" role="alert">
-                <i class="bi bi-clock-history me-1"></i>
-                <strong>Coming Soon:</strong>
-                Fitur pencairan poin sedang dalam pengembangan. Nantinya, Anda bisa mengajukan
-                pencairan manual ke Admin EcoPalu yang akan mentransfer ke e-wallet Anda
-                (DANA / OVO / GoPay / ShopeePay). Riwayat penukaran lengkap juga akan tersedia di sini.
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div>
+                    <h5 class="mb-1">
+                        <i class="bi bi-cash-coin text-success me-2"></i>
+                        Reward & Poin
+                    </h5>
+                    <p class="text-muted small mb-0">
+                        Ajukan pencairan saldo coin ke e-wallet pilihan Anda. Diverifikasi &amp; ditransfer
+                        manual oleh Admin EcoPalu.
+                    </p>
+                </div>
+                <a href="<?= base_url('pencairan') ?>" class="btn btn-eco btn-lg">
+                    <i class="bi bi-cash-stack"></i> Ajukan Pencairan
+                </a>
             </div>
         </div>
     </div>
@@ -172,6 +176,9 @@
                 </a>
                 <a href="<?= base_url('penjemputan?role=user') ?>" class="btn btn-outline-eco">
                     <i class="bi bi-list-check"></i> Status Pengajuan
+                </a>
+                <a href="<?= base_url('pencairan') ?>" class="btn btn-outline-eco">
+                    <i class="bi bi-cash-stack"></i> Pencairan
                 </a>
                 <a href="<?= base_url('password/change') ?>" class="btn btn-outline-eco">
                     <i class="bi bi-key"></i> Ubah Password

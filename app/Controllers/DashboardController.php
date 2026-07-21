@@ -24,7 +24,7 @@ class DashboardController extends BaseController
     /**
      * Hitung jumlah notifikasi belum dibaca untuk user session saat ini.
      */
-    private function getUnreadCount(): int
+    public function getUnreadCountForCurrentUser(): int
     {
         $userId = (int) (session('user_id') ?? 0);
         if ($userId <= 0) {
@@ -38,8 +38,9 @@ class DashboardController extends BaseController
 
     /**
      * Ambil 10 notifikasi terbaru untuk topbar dropdown.
+     * Public agar bisa dipanggil dari controller lain yang extend layout dashboard.
      */
-    private function getRecentNotif(int $limit = 10): array
+    public function getRecentNotifForCurrentUser(int $limit = 10): array
     {
         $userId = (int) (session('user_id') ?? 0);
         if ($userId <= 0) {
@@ -102,8 +103,8 @@ class DashboardController extends BaseController
 
         $data = [
             'title'             => 'Dashboard User — EcoPalu',
-            'unread_count'      => $this->getUnreadCount(),
-            'notifList'         => $this->getRecentNotif(),
+            'unread_count'      => $this->getUnreadCountForCurrentUser(),
+            'notifList'         => $this->getRecentNotifForCurrentUser(),
 
             // Poin & riwayat
             'total_poin'               => $totalPoin,
@@ -139,8 +140,8 @@ class DashboardController extends BaseController
 
         $data = [
             'title'        => 'Dashboard Admin — EcoPalu',
-            'unread_count' => $this->getUnreadCount(),
-            'notifList'    => $this->getRecentNotif(),
+            'unread_count' => $this->getUnreadCountForCurrentUser(),
+            'notifList'    => $this->getRecentNotifForCurrentUser(),
 
             // 6 card statistik (semua null-coalesce ke 0 supaya tidak error saat tabel kosong)
             'card_disetujui'      => $this->countStatus($penjemputanModel, 'disetujui'),
@@ -209,8 +210,8 @@ class DashboardController extends BaseController
 
         $data = [
             'title'          => 'Dashboard Bank Sampah — EcoPalu',
-            'unread_count'   => $this->getUnreadCount(),
-            'notifList'      => $this->getRecentNotif(),
+            'unread_count'   => $this->getUnreadCountForCurrentUser(),
+            'notifList'      => $this->getRecentNotifForCurrentUser(),
             'penjemputan'    => $penjemputan,
             'count_menunggu' => $countMenunggu,
             'count_selesai'  => $countSelesai,

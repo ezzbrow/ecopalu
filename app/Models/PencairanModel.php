@@ -101,4 +101,50 @@ class PencairanModel extends Model
         }
         return $out;
     }
+
+    /**
+     * Riwayat pencairan per user (untuk halaman Riwayat User).
+     * Default limit 20, sorted by created_at DESC.
+     */
+    public function getRiwayatByUser(int $userId, int $limit = 20): array
+    {
+        return $this
+            ->where('user_id', $userId)
+            ->where('deleted_at', null)
+            ->orderBy('created_at', 'DESC')
+            ->limit($limit)
+            ->findAll();
+    }
+
+    /**
+     * Total coin yang sudah DICAIRKAN (status='berhasil') — untuk running balance.
+     * Tidak termasuk 'menunggu'/'diproses' (masih hold).
+     */
+    public function totalCoinDicairkanBerhasil(int $userId): int
+    {
+        $row = $this
+            ->selectSum('nominal_coin')
+            ->where('user_id', $userId)
+            ->where('status', 'berhasil')
+            ->where('deleted_at', null)
+            ->get()
+            ->getRow();
+        return (int) ($row->nominal_coin ?? 0);
+    }
+
+    /**
+     * Total coin yang sedang HOLD (status='menunggu' ATAU 'diproses').
+     * Untuk validasi saldo saat ajukan baru.
+     */
+    public function totalCoinHold(int $userId): int
+    {
+        $row = $this
+            ->selectSum('nominal_coin')
+            ->where('user_id', $userId)
+            ->whereIn('status', ['menunggu', 'diproses'])
+            ->where('deleted_at', null)
+            ->get()
+            ->getRow();
+        return (int) ($row->nominal_coin ?? 0);
+    }
 }

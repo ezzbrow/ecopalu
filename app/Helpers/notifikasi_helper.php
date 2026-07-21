@@ -84,6 +84,17 @@ if (! function_exists('markNotifikasiRead')) {
     }
 }
 
+if (! function_exists('rateCoinToRupiah')) {
+    /**
+     * Rate konversi coin ke rupiah.
+     * Spec: 1 coin = Rp 400.
+     */
+    function rateCoinToRupiah(): int
+    {
+        return 400;
+    }
+}
+
 if (! function_exists('formatTanggalIndonesia')) {
     function formatTanggalIndonesia(string $date): string
     {

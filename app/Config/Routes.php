@@ -103,3 +103,17 @@ $routes->post('/password/change', 'PasswordController::attemptChange', ['filter'
 // EDUKASI (semua role yang login)
 // =====================
 $routes->get('/edukasi', 'EdukasiController::index', ['filter' => 'auth']);
+
+
+// =====================
+// PENCAIRAN REWARD (Step 8-10 alur spec)
+// =====================
+// User: lihat saldo, ajukan pencairan
+$routes->get('/pencairan',          'PencairanController::index',    ['filter' => ['auth', 'role:user']]);
+$routes->get('/pencairan/create',   'PencairanController::create',   ['filter' => ['auth', 'role:user']]);
+$routes->post('/pencairan/store',   'PencairanController::store',    ['filter' => ['auth', 'role:user']]);
+// Admin: verifikasi, mark-transferred, reject
+$routes->get('/pencairan/admin',                                           'PencairanController::adminList',       ['filter' => ['auth', 'role:admin']]);
+$routes->post('/pencairan/(:num)/approve',                                 'PencairanController::approve/$1',     ['filter' => ['auth', 'role:admin']]);
+$routes->post('/pencairan/(:num)/mark-transferred',                        'PencairanController::markTransferred/$1', ['filter' => ['auth', 'role:admin']]);
+$routes->post('/pencairan/(:num)/reject',                                 'PencairanController::reject/$1',      ['filter' => ['auth', 'role:admin']]);
