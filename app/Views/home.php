@@ -331,8 +331,9 @@
                         <i class="bi bi-truck step-icon"></i>
                         <h5>Setor Sampah</h5>
                         <p class="text-muted small mb-0">
-                            Ajukan penyetoran sampah di hari selain
-                            Rabu &amp; Sabtu (hari penjemputan Bank Sampah).
+                            Ajukan penyetoran sampah di hari
+                            <strong>Rabu &amp; Sabtu</strong> (hari operasional
+                            penjemputan Bank Sampah Kabelotapura).
                             Isi jenis sampah, berat, alamat, dan titik
                             lokasi di peta.
                         </p>
