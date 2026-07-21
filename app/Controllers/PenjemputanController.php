@@ -201,6 +201,12 @@ class PenjemputanController extends BaseController
             }
         }
 
+        // NOTE: 'status' TIDAK di-update di sini.
+        // Form edit (penjemputan/edit.php) tidak punya field status — jika
+        // di-set dari POST, nilai kosong akan men-overwrite status existing
+        // (non-strict MySQL coerce empty string ke ''). Status hanya
+        // boleh diubah lewat method khusus (setujui/tolak/konfirmasiSelesai/
+        // finalisasiPoin/tolakPoin) yang punya logic transisi eksplisit.
         $this->penjemputanModel->update($id, [
             'kategori_sampah_id' => $this->request->getPost('kategori_sampah_id'),
             'berat'             => $this->request->getPost('berat'),
@@ -208,7 +214,6 @@ class PenjemputanController extends BaseController
             'alamat'            => $this->request->getPost('alamat'),
             'latitude'          => $this->request->getPost('latitude'),
             'longitude'         => $this->request->getPost('longitude'),
-            'status'            => $this->request->getPost('status'),
         ]);
 
         return redirect()->to('/penjemputan?role=' . $sessionRole);

@@ -49,18 +49,6 @@
         </div>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Status</label>
-        <select name="status" class="form-control">
-            <?php foreach (['menunggu','disetujui','menunggu_pemberian_poin','selesai','ditolak'] as $opt): ?>
-                <option value="<?= $opt ?>"
-                    <?= $penjemputan['status'] === $opt ? 'selected' : '' ?>>
-                    <?= ucfirst(str_replace('_', ' ', $opt)) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </div>
-
     <button type="submit" class="btn btn-eco">Update</button>
     <a href="<?= base_url('penjemputan?role=admin') ?>" class="btn btn-secondary">Kembali</a>
 
