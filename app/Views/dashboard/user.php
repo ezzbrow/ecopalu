@@ -29,4 +29,9 @@
         </small>
     </div>
 
+    <!-- Kalender (highlight hari operasional penjemputan) -->
+    <div class="mt-4" id="kalender">
+        <?= $this->include('dashboard/_partial_kalender') ?>
+    </div>
+
 <?= $this->endSection() ?>
