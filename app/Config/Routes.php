@@ -9,56 +9,56 @@ use CodeIgniter\Router\RouteCollection;
 // =====================
 // USER (Admin only — Q7)
 // =====================
-$routes->get('/users', 'UserController::index', ['filter' => 'role:admin']);
-$routes->get('/users/create', 'UserController::create', ['filter' => 'role:admin']);
-$routes->post('/users/store', 'UserController::store', ['filter' => 'role:admin']);
-$routes->get('/users/edit/(:num)', 'UserController::edit/$1', ['filter' => 'role:admin']);
-$routes->post('/users/update/(:num)', 'UserController::update/$1', ['filter' => 'role:admin']);
-$routes->post('/users/delete/(:num)', 'UserController::delete/$1', ['filter' => 'role:admin']);  // POST (bukan GET) untuk CSRF safety
+$routes->get('/users', 'UserController::index', ['filter' => ['auth', 'role:admin']]);
+$routes->get('/users/create', 'UserController::create', ['filter' => ['auth', 'role:admin']]);
+$routes->post('/users/store', 'UserController::store', ['filter' => ['auth', 'role:admin']]);
+$routes->get('/users/edit/(:num)', 'UserController::edit/$1', ['filter' => ['auth', 'role:admin']]);
+$routes->post('/users/update/(:num)', 'UserController::update/$1', ['filter' => ['auth', 'role:admin']]);
+$routes->post('/users/delete/(:num)', 'UserController::delete/$1', ['filter' => ['auth', 'role:admin']]);  // POST (bukan GET) untuk CSRF safety
 
 
 // =====================
 // KATEGORI SAMPAH (Admin only — Q7)
 // =====================
-$routes->get('/kategori-sampah', 'KategoriSampahController::index', ['filter' => 'role:admin']);
-$routes->get('/kategori-sampah/create', 'KategoriSampahController::create', ['filter' => 'role:admin']);
-$routes->post('/kategori-sampah/store', 'KategoriSampahController::store', ['filter' => 'role:admin']);
-$routes->get('/kategori-sampah/edit/(:num)', 'KategoriSampahController::edit/$1', ['filter' => 'role:admin']);
-$routes->post('/kategori-sampah/update/(:num)', 'KategoriSampahController::update/$1', ['filter' => 'role:admin']);
-$routes->post('/kategori-sampah/delete/(:num)', 'KategoriSampahController::delete/$1', ['filter' => 'role:admin']);  // POST (bukan GET) untuk CSRF safety
+$routes->get('/kategori-sampah', 'KategoriSampahController::index', ['filter' => ['auth', 'role:admin']]);
+$routes->get('/kategori-sampah/create', 'KategoriSampahController::create', ['filter' => ['auth', 'role:admin']]);
+$routes->post('/kategori-sampah/store', 'KategoriSampahController::store', ['filter' => ['auth', 'role:admin']]);
+$routes->get('/kategori-sampah/edit/(:num)', 'KategoriSampahController::edit/$1', ['filter' => ['auth', 'role:admin']]);
+$routes->post('/kategori-sampah/update/(:num)', 'KategoriSampahController::update/$1', ['filter' => ['auth', 'role:admin']]);
+$routes->post('/kategori-sampah/delete/(:num)', 'KategoriSampahController::delete/$1', ['filter' => ['auth', 'role:admin']]);  // POST (bukan GET) untuk CSRF safety
 
 
 // =====================
 // PENJEMPUTAN
 // =====================
 // Q1: GET list — semua role boleh akses, filter data per role di controller
-$routes->get('/penjemputan', 'PenjemputanController::index', ['filter' => 'role:admin,banksampah,user']);
+$routes->get('/penjemputan', 'PenjemputanController::index', ['filter' => ['auth', 'role:admin,banksampah,user']]);
 // Q2: create/store — HANYA user
-$routes->get('/penjemputan/create', 'PenjemputanController::create', ['filter' => 'role:user']);
-$routes->post('/penjemputan/store', 'PenjemputanController::store', ['filter' => 'role:user']);
+$routes->get('/penjemputan/create', 'PenjemputanController::create', ['filter' => ['auth', 'role:user']]);
+$routes->post('/penjemputan/store', 'PenjemputanController::store', ['filter' => ['auth', 'role:user']]);
 // Q3: edit/update — admin + user (validasi granular di controller)
-$routes->get('/penjemputan/edit/(:num)', 'PenjemputanController::edit/$1', ['filter' => 'role:admin,user']);
-$routes->post('/penjemputan/update/(:num)', 'PenjemputanController::update/$1', ['filter' => 'role:admin,user']);
+$routes->get('/penjemputan/edit/(:num)', 'PenjemputanController::edit/$1', ['filter' => ['auth', 'role:admin,user']]);
+$routes->post('/penjemputan/update/(:num)', 'PenjemputanController::update/$1', ['filter' => ['auth', 'role:admin,user']]);
 // Hapus: HANYA admin (route delete/$1 tidak ada — sudah dihapus Poin 4)
 
 // Q4: setujui/tolak/finalisasi-poin/tolak-poin — HANYA admin
-$routes->post('/penjemputan/setujui/(:num)',          'PenjemputanController::setujui/$1',          ['filter' => 'role:admin']);
-$routes->post('/penjemputan/tolak/(:num)',             'PenjemputanController::tolak/$1',             ['filter' => 'role:admin']);
-$routes->post('/penjemputan/finalisasi-poin/(:num)',   'PenjemputanController::finalisasiPoin/$1',   ['filter' => 'role:admin']);
-$routes->post('/penjemputan/tolak-poin/(:num)',        'PenjemputanController::tolakPoin/$1',        ['filter' => 'role:admin']);
+$routes->post('/penjemputan/setujui/(:num)',          'PenjemputanController::setujui/$1',          ['filter' => ['auth', 'role:admin']]);
+$routes->post('/penjemputan/tolak/(:num)',             'PenjemputanController::tolak/$1',             ['filter' => ['auth', 'role:admin']]);
+$routes->post('/penjemputan/finalisasi-poin/(:num)',   'PenjemputanController::finalisasiPoin/$1',   ['filter' => ['auth', 'role:admin']]);
+$routes->post('/penjemputan/tolak-poin/(:num)',        'PenjemputanController::tolakPoin/$1',        ['filter' => ['auth', 'role:admin']]);
 // Q5: konfirmasi-selesai — HANYA banksampah
-$routes->post('/penjemputan/konfirmasi-selesai/(:num)', 'PenjemputanController::konfirmasiSelesai/$1', ['filter' => 'role:banksampah']);
+$routes->post('/penjemputan/konfirmasi-selesai/(:num)', 'PenjemputanController::konfirmasiSelesai/$1', ['filter' => ['auth', 'role:banksampah']]);
 
 
 // =====================
 // TRANSAKSI COIN (Admin only — Q6)
 // =====================
-$routes->get('/transaksi-coin', 'TransaksiCoinController::index', ['filter' => 'role:admin']);
-$routes->get('/transaksi-coin/create', 'TransaksiCoinController::create', ['filter' => 'role:admin']);
-$routes->post('/transaksi-coin/store', 'TransaksiCoinController::store', ['filter' => 'role:admin']);
-$routes->get('/transaksi-coin/edit/(:num)', 'TransaksiCoinController::edit/$1', ['filter' => 'role:admin']);
-$routes->post('/transaksi-coin/update/(:num)', 'TransaksiCoinController::update/$1', ['filter' => 'role:admin']);
-$routes->post('/transaksi-coin/delete/(:num)', 'TransaksiCoinController::delete/$1', ['filter' => 'role:admin']);  // POST (bukan GET) untuk CSRF safety
+$routes->get('/transaksi-coin', 'TransaksiCoinController::index', ['filter' => ['auth', 'role:admin']]);
+$routes->get('/transaksi-coin/create', 'TransaksiCoinController::create', ['filter' => ['auth', 'role:admin']]);
+$routes->post('/transaksi-coin/store', 'TransaksiCoinController::store', ['filter' => ['auth', 'role:admin']]);
+$routes->get('/transaksi-coin/edit/(:num)', 'TransaksiCoinController::edit/$1', ['filter' => ['auth', 'role:admin']]);
+$routes->post('/transaksi-coin/update/(:num)', 'TransaksiCoinController::update/$1', ['filter' => ['auth', 'role:admin']]);
+$routes->post('/transaksi-coin/delete/(:num)', 'TransaksiCoinController::delete/$1', ['filter' => ['auth', 'role:admin']]);  // POST (bukan GET) untuk CSRF safety
 
 
 // =====================
@@ -79,9 +79,9 @@ $routes->post('/logout',           'AuthController::logout');   // POST (bukan G
 // =====================
 // DASHBOARD (per-role — Q8)
 // =====================
-$routes->get('/dashboard/user',       'DashboardController::user',       ['filter' => 'role:user']);
-$routes->get('/dashboard/admin',      'DashboardController::admin',      ['filter' => 'role:admin']);
-$routes->get('/dashboard/banksampah', 'DashboardController::banksampah', ['filter' => 'role:banksampah']);
+$routes->get('/dashboard/user',       'DashboardController::user',       ['filter' => ['auth', 'role:user']]);
+$routes->get('/dashboard/admin',      'DashboardController::admin',      ['filter' => ['auth', 'role:admin']]);
+$routes->get('/dashboard/banksampah', 'DashboardController::banksampah', ['filter' => ['auth', 'role:banksampah']]);
 
 
 // =====================
