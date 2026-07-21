@@ -31,7 +31,11 @@
             <td><?= $user['role'] ?></td>
             <td>
                 <a href="<?= base_url('users/edit/'.$user['id']) ?>" class="btn btn-warning btn-sm">Edit</a>
-                <a href="<?= base_url('users/delete/'.$user['id']) ?>" class="btn btn-danger btn-sm">Hapus</a>
+                <form action="<?= base_url('users/delete/'.$user['id']) ?>" method="post" class="d-inline"
+                      onsubmit="return confirm('Yakin ingin menghapus user ini?')">
+                    <?= csrf_field() ?>
+                    <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
+                </form>
             </td>
         </tr>
         <?php endforeach; ?>

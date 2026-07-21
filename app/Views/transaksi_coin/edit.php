@@ -5,6 +5,7 @@
 <h2>Edit Transaksi Coin</h2>
 
 <form action="<?= base_url('transaksi-coin/update/'.$transaksi['id']) ?>" method="post">
+    <?= csrf_field() ?>
 
     <div class="mb-3">
         <label class="form-label">Kategori Sampah ID</label>

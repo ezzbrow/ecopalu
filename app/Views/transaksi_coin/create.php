@@ -5,6 +5,7 @@
 <h2>Tambah Transaksi Coin</h2>
 
 <form action="<?= base_url('transaksi-coin/store') ?>" method="post">
+    <?= csrf_field() ?>
 
     <div class="mb-3">
         <label class="form-label">User ID</label>

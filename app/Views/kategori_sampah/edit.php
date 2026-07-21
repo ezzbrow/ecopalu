@@ -5,6 +5,7 @@
 <h2>Edit Kategori Sampah</h2>
 
 <form action="<?= base_url('kategori-sampah/update/'.$kategori['id']) ?>" method="post">
+    <?= csrf_field() ?>
 
     <div class="mb-3">
         <label class="form-label">Nama Kategori</label>

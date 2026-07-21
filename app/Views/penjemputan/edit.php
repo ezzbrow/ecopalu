@@ -5,6 +5,7 @@
 <h2>Edit Penjemputan</h2>
 
 <form action="<?= base_url('penjemputan/update/'.$penjemputan['id']) ?>" method="post">
+    <?= csrf_field() ?>
 
     <div class="mb-3">
         <label class="form-label">Kategori Sampah</label>

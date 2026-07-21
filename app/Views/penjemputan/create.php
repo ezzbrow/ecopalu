@@ -9,12 +9,7 @@
 <?php endif; ?>
 
 <form action="<?= base_url('penjemputan/store') ?>" method="post">
-
-    <div class="mb-3">
-        <label class="form-label">User ID</label>
-        <input type="number" name="user_id" class="form-control" required>
-        <small class="text-muted">Sementara hardcode (akan otomatis dari session setelah Auth).</small>
-    </div>
+    <?= csrf_field() ?>
 
     <div class="mb-3">
         <label class="form-label">Kategori Sampah</label>

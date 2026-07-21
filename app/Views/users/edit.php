@@ -5,6 +5,7 @@
 <h2>Edit User</h2>
 
 <form action="<?= base_url('users/update/'.$user['id']) ?>" method="post">
+    <?= csrf_field() ?>
 
     <div class="mb-3">
         <label>Nama</label>

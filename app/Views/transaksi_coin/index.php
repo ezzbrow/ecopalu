@@ -46,11 +46,11 @@
                    Edit
                 </a>
 
-                <a href="<?= base_url('transaksi-coin/delete/'.$item['id']) ?>"
-                   class="btn btn-danger btn-sm"
-                   onclick="return confirm('Yakin ingin menghapus data ini?')">
-                   Hapus
-                </a>
+                <form action="<?= base_url('transaksi-coin/delete/'.$item['id']) ?>" method="post" class="d-inline"
+                      onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                    <?= csrf_field() ?>
+                    <button class="btn btn-danger btn-sm" type="submit">Hapus</button>
+                </form>
             </td>
 
         </tr>
