@@ -82,3 +82,11 @@ $routes->post('/logout',           'AuthController::logout');   // POST (bukan G
 $routes->get('/dashboard/user',       'DashboardController::user',       ['filter' => 'role:user']);
 $routes->get('/dashboard/admin',      'DashboardController::admin',      ['filter' => 'role:admin']);
 $routes->get('/dashboard/banksampah', 'DashboardController::banksampah', ['filter' => 'role:banksampah']);
+
+
+// =====================
+// NOTIFIKASI (read/unread per klik)
+// =====================
+// POST + CSRF untuk cegah state-changing via GET (konsisten dengan pola logout POST)
+$routes->post('/notification/mark/(:num)', 'NotificationController::markRead/$1', ['filter' => 'auth']);
+$routes->post('/notification/mark-all',    'NotificationController::markAllRead', ['filter' => 'auth']);

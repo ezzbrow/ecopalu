@@ -1,43 +1,22 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard User — EcoPalu</title>
+<?= $this->extend('layouts/dashboard') ?>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
-</head>
-<body style="font-family:'Poppins',sans-serif; background:#f8fafc; min-height:100vh;">
+<?= $this->section('content') ?>
 
-<div class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 style="color:#22C55E; margin:0;">♻ EcoPalu</h2>
-            <small class="text-muted">Dashboard User (EcoFriend)</small>
-        </div>
-
-        <!-- Logout via form POST (bukan link GET), sesuai Langkah B -->
-        <form action="<?= base_url('logout') ?>" method="post" class="m-0">
-            <?= csrf_field() ?>
-            <button type="submit" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-box-arrow-right"></i> Logout
-            </button>
-        </form>
-    </div>
+    <!-- ============== DASHBOARD USER (EcoFriend) ============== -->
+    <h3 class="mb-4">Beranda User</h3>
 
     <?php if (session()->getFlashdata('success')): ?>
         <div class="alert alert-success"><?= session()->getFlashdata('success') ?></div>
+    <?php endif; ?>
+    <?php if (session()->getFlashdata('error')): ?>
+        <div class="alert alert-danger"><?= session()->getFlashdata('error') ?></div>
     <?php endif; ?>
 
     <div class="card shadow-sm" style="border-radius:16px;">
         <div class="card-body p-4">
             <h4 class="mb-3">Dashboard User — Coming Soon</h4>
-
-            <p class="mb-2">Halo, <strong><?= esc(session()->get('nama')) ?></strong>! Anda login sebagai <span class="badge bg-success"><?= esc(session()->get('role')) ?></span>.</p>
-
+            <p class="mb-2">Halo, <strong><?= esc(session()->get('nama')) ?></strong>! Anda login sebagai
+                <span class="badge bg-success"><?= esc(session()->get('role')) ?></span>.</p>
             <p class="text-muted mb-0">
                 Halaman dashboard User sesuai spec CLAUDE.md (Beranda, Riwayat Penukaran, Ajukan Penjemputan, Status Pengajuan, Notifikasi, Reward & Poin, Ubah Password, Edukasi, Kalender) akan dibangun di langkah selanjutnya.
             </p>
@@ -49,7 +28,5 @@
             Session aktif — user_id: <?= esc(session()->get('user_id')) ?> &middot; role: <?= esc(session()->get('role')) ?>
         </small>
     </div>
-</div>
 
-</body>
-</html>
+<?= $this->endSection() ?>

@@ -55,6 +55,35 @@ if (! function_exists('isHariPenjemputan')) {
     }
 }
 
+if (! function_exists('markNotifikasiRead')) {
+    /**
+     * Tandai SATU notifikasi sebagai sudah dibaca (idempotent).
+     * @param int $idNotif
+     * @param int $idUserExpected  user_id penerima (untuk validasi ownership)
+     * @return bool sukses update
+     */
+    function markNotifikasiRead(int $idNotif, int $idUserExpected): bool
+    {
+        $model = new \App\Models\NotificationModel();
+        $row = $model->find($idNotif);
+        if (! $row) {
+            return false;
+        }
+        // Validasi ownership: hanya penerima yang boleh mark-read
+        if ((int) $row['recipient_user_id'] !== $idUserExpected) {
+            return false;
+        }
+        // Idempotent: kalau sudah read, return true tanpa update ulang
+        if ((int) $row['is_read'] === 1) {
+            return true;
+        }
+        return (bool) $model->update($idNotif, [
+            'is_read' => 1,
+            'read_at' => date('Y-m-d H:i:s'),
+        ]);
+    }
+}
+
 if (! function_exists('formatTanggalIndonesia')) {
     function formatTanggalIndonesia(string $date): string
     {
