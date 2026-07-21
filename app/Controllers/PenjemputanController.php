@@ -26,14 +26,37 @@ class PenjemputanController extends BaseController
      * Daftar penjemputan — tab difilter via ?status=...
      * Status yang dipakai di UI: semua, menunggu, disetujui, ditolak, selesai,
      * menunggu_pemberian_poin (khusus Admin EcoPalu).
+     *
+     * Q1 (Langkah C): role & ownership filter berdasarkan session, BUKAN query string.
+     *   - admin: lihat semua data
+     *   - banksampah: hanya status='disetujui' (siap dijemput)
+     *   - user: hanya row miliknya sendiri (user_id = session)
      */
     public function index()
     {
-        $role     = $this->request->getGet('role') ?? 'admin';
+        $role     = session()->get('role');
+        $userId   = (int) session()->get('user_id');
         $tab      = $this->request->getGet('status') ?? 'semua';
 
         $builder = $this->penjemputanModel->orderBy('created_at', 'DESC');
 
+        // Q1: Filter data per role
+        switch ($role) {
+            case 'banksampah':
+                // Hanya yang sudah disetujui admin (= "Menunggu" Bank Sampah)
+                $builder->where('status', 'disetujui');
+                break;
+            case 'user':
+                // Hanya row milik sendiri
+                $builder->where('user_id', $userId);
+                break;
+            case 'admin':
+            default:
+                // Admin: tidak ada filter tambahan, lihat semua
+                break;
+        }
+
+        // Tab filter (sesuai role, untuk UI)
         switch ($tab) {
             case 'menunggu':
                 $builder->where('status', 'menunggu');
@@ -53,11 +76,6 @@ class PenjemputanController extends BaseController
             default:
                 // semua / unknown: no filter
                 break;
-        }
-
-        // Untuk Bank Sampah: hanya tampilkan yang sudah disetujui (status=disetujui) sebagai "Menunggu" mereka
-        if ($role === 'banksampah') {
-            $builder->where('status', 'disetujui');
         }
 
         $data = [
@@ -87,7 +105,7 @@ class PenjemputanController extends BaseController
      */
     public function store()
     {
-        $userId = $this->request->getPost('user_id');
+        $userId = (int) session()->get('user_id');
         $tanggalJemput = (string) $this->request->getPost('tanggal_jemput');
 
         // Validasi: tanggal_jemput wajib jatuh di hari penjemputan (Rabu/Sabtu)
@@ -102,7 +120,7 @@ class PenjemputanController extends BaseController
             return redirect()->back()->withInput()->with('error', 'Kategori sampah tidak valid.');
         }
         if ($userId && ! $this->userModel->find($userId)) {
-            return redirect()->back()->withInput()->with('error', 'User tidak valid.');
+            return redirect()->back()->withInput()->with('error', 'Session user tidak valid. Silakan login ulang.');
         }
 
         $id = $this->penjemputanModel->insert([
@@ -135,13 +153,54 @@ class PenjemputanController extends BaseController
 
     public function edit($id)
     {
-        $data['penjemputan'] = $this->penjemputanModel->find($id);
+        $row = $this->penjemputanModel->find($id);
+        if (! $row) {
+            return redirect()->to('/penjemputan')
+                ->with('error', 'Data tidak ditemukan.');
+        }
+
+        // Q3: Validasi granular — user hanya boleh edit row miliknya sendiri
+        // DAN status masih 'menunggu'. Admin bebas.
+        $sessionRole = session()->get('role');
+        $sessionUserId = (int) session()->get('user_id');
+        if ($sessionRole === 'user') {
+            if ((int) $row['user_id'] !== $sessionUserId) {
+                return redirect()->to('/penjemputan')
+                    ->with('error', 'Anda tidak boleh mengedit pengajuan milik user lain.');
+            }
+            if ($row['status'] !== 'menunggu') {
+                return redirect()->to('/penjemputan')
+                    ->with('error', 'Pengajuan yang sudah diverifikasi tidak dapat diedit. Hubungi admin untuk perubahan.');
+            }
+        }
+
+        $data['penjemputan'] = $row;
         $data['kategori']    = $this->kategoriModel->findAll();
         return view('penjemputan/edit', $data);
     }
 
     public function update($id)
     {
+        $row = $this->penjemputanModel->find($id);
+        if (! $row) {
+            return redirect()->to('/penjemputan')
+                ->with('error', 'Data tidak ditemukan.');
+        }
+
+        // Q3: Validasi granular sama dengan edit()
+        $sessionRole = session()->get('role');
+        $sessionUserId = (int) session()->get('user_id');
+        if ($sessionRole === 'user') {
+            if ((int) $row['user_id'] !== $sessionUserId) {
+                return redirect()->to('/penjemputan')
+                    ->with('error', 'Anda tidak boleh mengedit pengajuan milik user lain.');
+            }
+            if ($row['status'] !== 'menunggu') {
+                return redirect()->to('/penjemputan')
+                    ->with('error', 'Pengajuan yang sudah diverifikasi tidak dapat diedit. Hubungi admin untuk perubahan.');
+            }
+        }
+
         $this->penjemputanModel->update($id, [
             'kategori_sampah_id' => $this->request->getPost('kategori_sampah_id'),
             'berat'             => $this->request->getPost('berat'),
@@ -152,7 +211,7 @@ class PenjemputanController extends BaseController
             'status'            => $this->request->getPost('status'),
         ]);
 
-        return redirect()->to('/penjemputan?role=admin');
+        return redirect()->to('/penjemputan?role=' . $sessionRole);
     }
 
     public function delete($id)
