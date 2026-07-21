@@ -90,3 +90,16 @@ $routes->get('/dashboard/banksampah', 'DashboardController::banksampah', ['filte
 // POST + CSRF untuk cegah state-changing via GET (konsisten dengan pola logout POST)
 $routes->post('/notification/mark/(:num)', 'NotificationController::markRead/$1', ['filter' => 'auth']);
 $routes->post('/notification/mark-all',    'NotificationController::markAllRead', ['filter' => 'auth']);
+
+
+// =====================
+// UBAH PASSWORD (semua role yang login)
+// =====================
+$routes->get('/password/change',  'PasswordController::change',       ['filter' => 'auth']);
+$routes->post('/password/change', 'PasswordController::attemptChange', ['filter' => 'auth']);
+
+
+// =====================
+// EDUKASI (semua role yang login)
+// =====================
+$routes->get('/edukasi', 'EdukasiController::index', ['filter' => 'auth']);

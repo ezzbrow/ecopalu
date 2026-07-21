@@ -50,10 +50,70 @@ class DashboardController extends BaseController
 
     public function user()
     {
+        $userId      = (int) (session('user_id') ?? 0);
+        $coinModel   = new TransaksiCoinModel();
+        $penjemputanModel = new PenjemputanModel();
+        $pencairanModel   = new PencairanModel();
+
+        // Total poin dari transaksi_coin (hanya yang status=selesai, supaya tidak double-count).
+        $totalPoin = 0;
+        $totalTransaksi = 0;
+        if ($userId > 0) {
+            $row = $coinModel
+                ->selectSum('total_coin')
+                ->select('COUNT(*) AS total_transaksi', false)
+                ->where('user_id', $userId)
+                ->where('deleted_at', null)
+                ->get()
+                ->getRow();
+            $totalPoin       = (int) ($row->total_coin ?? 0);
+            $totalTransaksi  = (int) ($row->total_transaksi ?? 0);
+        }
+
+        // Riwayat Penukaran: agregasi pencairan_reward per user.
+        $riwayatCoinDicairkan = 0;
+        $riwayatRupiahDicairkan = 0;
+        $jumlahPencairanBerhasil = 0;
+        if ($userId > 0) {
+            $rRow = $pencairanModel
+                ->selectSum('nominal_coin')
+                ->selectSum('nominal_rupiah')
+                ->select('COUNT(*) AS jumlah', false)
+                ->where('user_id', $userId)
+                ->where('status', 'berhasil')
+                ->where('deleted_at', null)
+                ->get()
+                ->getRow();
+            $riwayatCoinDicairkan   = (int) ($rRow->nominal_coin ?? 0);
+            $riwayatRupiahDicairkan = (int) ($rRow->nominal_rupiah ?? 0);
+            $jumlahPencairanBerhasil = (int) ($rRow->jumlah ?? 0);
+        }
+
+        // Status pengajuan user (5 status spec, TIDAK termasuk menunggu_pemberian_poin)
+        $userPenjemputan = [];
+        if ($userId > 0) {
+            $userPenjemputan = $penjemputanModel
+                ->where('user_id', $userId)
+                ->where('deleted_at', null)
+                ->orderBy('created_at', 'DESC')
+                ->limit(5)
+                ->findAll();
+        }
+
         $data = [
-            'title'        => 'Dashboard User — EcoPalu',
-            'unread_count' => $this->getUnreadCount(),
-            'notifList'    => $this->getRecentNotif(),
+            'title'             => 'Dashboard User — EcoPalu',
+            'unread_count'      => $this->getUnreadCount(),
+            'notifList'         => $this->getRecentNotif(),
+
+            // Poin & riwayat
+            'total_poin'               => $totalPoin,
+            'total_transaksi'          => $totalTransaksi,
+            'riwayat_coin_dicairkan'   => $riwayatCoinDicairkan,
+            'riwayat_rupiah_dicairkan' => $riwayatRupiahDicairkan,
+            'jumlah_pencairan_berhasil' => $jumlahPencairanBerhasil,
+
+            // Status pengajuan (5 row terakhir)
+            'user_penjemputan'         => $userPenjemputan,
         ];
         return view('dashboard/user', $data);
     }
@@ -135,10 +195,25 @@ class DashboardController extends BaseController
 
     public function banksampah()
     {
+        $penjemputanModel = new PenjemputanModel();
+
+        // Bank Sampah hanya perlu lihat 2 status: 'disetujui' (siap dijemput) & 'selesai'.
+        $penjemputan = $penjemputanModel
+            ->where('deleted_at', null)
+            ->whereIn('status', ['disetujui', 'selesai'])
+            ->orderBy('created_at', 'DESC')
+            ->findAll();
+
+        $countMenunggu  = $penjemputanModel->where('status', 'disetujui')->where('deleted_at', null)->countAllResults();
+        $countSelesai   = $penjemputanModel->where('status', 'selesai')->where('deleted_at', null)->countAllResults();
+
         $data = [
-            'title'        => 'Dashboard Bank Sampah — EcoPalu',
-            'unread_count' => $this->getUnreadCount(),
-            'notifList'    => $this->getRecentNotif(),
+            'title'          => 'Dashboard Bank Sampah — EcoPalu',
+            'unread_count'   => $this->getUnreadCount(),
+            'notifList'      => $this->getRecentNotif(),
+            'penjemputan'    => $penjemputan,
+            'count_menunggu' => $countMenunggu,
+            'count_selesai'  => $countSelesai,
         ];
         return view('dashboard/banksampah', $data);
     }
