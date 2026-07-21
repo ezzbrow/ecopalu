@@ -143,6 +143,7 @@ $statusLabel = [
                                     <form method="post"
                                           action="<?= base_url('penjemputan/setujui/'.$row['id']) ?>"
                                           class="d-inline">
+                                        <?= csrf_field() ?>
                                         <button class="btn btn-success btn-sm">Setujui</button>
                                     </form>
                                     <button class="btn btn-danger btn-sm"
@@ -153,6 +154,7 @@ $statusLabel = [
                                     <div class="collapse mt-2" id="tolakForm<?= $row['id'] ?>">
                                         <form method="post"
                                               action="<?= base_url('penjemputan/tolak/'.$row['id']) ?>">
+                                            <?= csrf_field() ?>
                                             <textarea name="alasan_penolakan"
                                                       class="form-control form-control-sm mb-1"
                                                       rows="2"
@@ -175,6 +177,7 @@ $statusLabel = [
                                     <div class="collapse mt-2" id="finalForm<?= $row['id'] ?>">
                                         <form method="post"
                                               action="<?= base_url('penjemputan/finalisasi-poin/'.$row['id']) ?>">
+                                            <?= csrf_field() ?>
                                             <p class="small mb-1">Poin akan dihitung otomatis: berat × coin/kategori.</p>
                                             <button class="btn btn-success btn-sm">Finalisasi & Kirim Poin</button>
                                         </form>
@@ -182,6 +185,7 @@ $statusLabel = [
                                     <div class="collapse mt-2" id="tolakPoinForm<?= $row['id'] ?>">
                                         <form method="post"
                                               action="<?= base_url('penjemputan/tolak-poin/'.$row['id']) ?>">
+                                            <?= csrf_field() ?>
                                             <textarea name="alasan_penolakan"
                                                       class="form-control form-control-sm mb-1"
                                                       rows="2"
@@ -199,6 +203,7 @@ $statusLabel = [
                                     <form method="post"
                                           action="<?= base_url('penjemputan/konfirmasi-selesai/'.$row['id']) ?>"
                                           class="d-inline">
+                                        <?= csrf_field() ?>
                                         <button class="btn btn-success btn-sm">
                                             Konfirmasi Selesai
                                         </button>
