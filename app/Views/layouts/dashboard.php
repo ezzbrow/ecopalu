@@ -188,7 +188,7 @@
             <i class="bi bi-list-check"></i> Status Pengajuan
         </a>
         <div class="nav-section">Reward</div>
-        <a class="nav-link" href="#reward">
+        <a class="nav-link <?= $isActive('/pencairan') && !$isActive('/pencairan/admin') ? 'active' : '' ?>" href="<?= base_url('pencairan') ?>">
             <i class="bi bi-coin"></i> Reward & Poin
         </a>
         <div class="nav-section">Akun</div>

@@ -126,3 +126,27 @@ $routes->get('/pencairan/admin',                                           'Penc
 $routes->post('/pencairan/(:num)/approve',                                 'PencairanController::approve/$1',     ['filter' => ['auth', 'role:admin']]);
 $routes->post('/pencairan/(:num)/mark-transferred',                        'PencairanController::markTransferred/$1', ['filter' => ['auth', 'role:admin']]);
 $routes->post('/pencairan/(:num)/reject',                                 'PencairanController::reject/$1',      ['filter' => ['auth', 'role:admin']]);
+// =====================================================
+// DEV-ONLY: Auto-login admin (hanya aktif di development)
+// =====================================================
+// CI4 otomatis set konstanta ENVIRONMENT dari .env (CI_ENVIRONMENT=development).
+// Route ini akan otomatis return 404 kalau ENVIRONMENT !== 'development',
+// jadi aman kalau tidak sengaja di-deploy ke production.
+if (ENVIRONMENT === 'development') {
+    $routes->get('/dev-login-admin', static function () {
+        $db = \Config\Database::connect();
+        $row = $db->table('users')->where('email', 'al1@gmail.com')->get()->getRowArray();
+        if (! $row) {
+            return service('response')
+                ->setStatusCode(404)
+                ->setBody('Admin user (al1@gmail.com) not found.');
+        }
+        // Set session langsung (bypass AuthController).
+        session()->set([
+            'user_id' => (int) $row['id'],
+            'role'    => $row['role'],
+            'nama'    => $row['name'],
+        ]);
+        return redirect()->to('/dashboard/admin');
+    });
+}
