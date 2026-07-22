@@ -65,16 +65,12 @@ class AuthController extends BaseController
             return redirect()->back()->withInput()
                 ->with('error', 'Email atau password salah.');
         }
-
         // Cek role: user yang login harus sesuai toggle
-        // Catatan: role 'admin' TIDAK bisa login lewat form publik ini
-        // (admin harus pakai mekanisme terpisah / hardcode akun awal)
+        // (admin TIDAK bisa login lewat form publik, sesuai Q1 Opsi B)
         if ($user['role'] !== $roleToggle) {
             return redirect()->back()->withInput()
                 ->with('error', 'Akun ini bukan ' . ($roleToggle === 'banksampah' ? 'Bank Sampah' : 'User') . '. Periksa pilihan role Anda.');
         }
-
-        // Set session
         session()->set([
             'user_id' => $user['id'],
             'role'    => $user['role'],

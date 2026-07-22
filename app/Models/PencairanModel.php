@@ -28,6 +28,7 @@ class PencairanModel extends Model
         'nominal_rupiah',
         'jenis_ewallet',
         'nomor_ewallet',
+        'reference_number',
         'status',
         'alasan_penolakan',
         'tanggal_transfer',

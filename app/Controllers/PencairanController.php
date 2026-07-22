@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\PencairanModel;
 use App\Models\TransaksiCoinModel;
+use App\Services\SimulatedPayoutService;
 
 /**
  * PencairanController — handle alur pencairan reward (Step 8-10 spec).
@@ -132,26 +133,177 @@ class PencairanController extends BaseController
                 ->with('error', 'Saldo tidak cukup. Saldo tersedia: ' . $saldoTersedia . ' coin.');
         }
 
+        // Simulasi Midtrans: langsung insert dengan status='diproses' + reference_number
+        // (skip 'menunggu' — tidak ada admin manual approval). Saldo coin user
+        // real-time berkurang (auto-deduct).
+        $payoutService = new SimulatedPayoutService();
+        $reference     = $payoutService->generateReference();
+
         $newId = $this->pencairanModel->insert([
-            'user_id'         => $userId,
-            'nominal_coin'    => $nominalCoin,
-            'nominal_rupiah'  => $nominalRupiah,
-            'jenis_ewallet'   => $this->request->getPost('jenis_ewallet'),
-            'nomor_ewallet'   => $this->request->getPost('nomor_ewallet'),
-            'status'          => 'menunggu',
+            'user_id'           => $userId,
+            'nominal_coin'      => $nominalCoin,
+            'nominal_rupiah'    => $nominalRupiah,
+            'jenis_ewallet'     => $this->request->getPost('jenis_ewallet'),
+            'nomor_ewallet'     => $this->request->getPost('nomor_ewallet'),
+            'status'            => 'diproses',
+            'reference_number'  => $reference,
         ]);
 
         insertNotifikasi(
             $userId,
             'user',
-            'Pengajuan pencairan diterima',
-            'Pengajuan pencairan Rp ' . number_format($nominalRupiah, 0, ',', '.') . ' sedang menunggu verifikasi Admin.',
+            'Pencairan sedang diproses',
+            'Pencairan Rp ' . number_format($nominalRupiah, 0, ',', '.') . ' sedang diproses. Mohon tunggu beberapa saat.',
             'pencairan',
             $newId
         );
 
-        return redirect()->to('/pencairan')
-            ->with('success', 'Pengajuan pencairan berhasil dikirim. Menunggu verifikasi Admin.');
+        // Kurangi saldo coin user (running balance approach: kurangi dari
+        // transaksi_coin row terbaru user, atau insert row koreksi negatif).
+        // Kita pakai pendekatan INSERT row koreksi (negative adjustment)
+        // supaya history saldo user tercatat di transaksi_coin — audit trail.
+        $this->coinModel->insert([
+            'user_id'           => $userId,
+            'kategori_sampah_id' => 1, // placeholder (koreksi saldo tidak terkait kategori)
+            'berat'             => 0,
+            'total_coin'        => -1 * $nominalCoin, // negatif
+        ]);
+
+        // Redirect ke halaman processing — frontend JS akan auto-trigger settle
+        // setelah 3 detik via POST /pencairan/{id}/auto-settle
+        return redirect()->to('/pencairan/processing/' . $newId)
+            ->with('info', 'Pencairan sedang diproses. Mohon tunggu...');
+    }
+
+    /**
+     * GET /pencairan/processing/{id}
+     * Halaman status "Sedang Diproses" dengan auto-redirect setelah 3 detik.
+     */
+    public function processing($id)
+    {
+        $userId = (int) (session('user_id') ?? 0);
+        if ($userId <= 0) {
+            return redirect()->to('/login');
+        }
+        $row = $this->pencairanModel->find($id);
+        if (! $row || (int) $row['user_id'] !== $userId) {
+            return redirect()->to('/pencairan')
+                ->with('error', 'Pencairan tidak ditemukan atau bukan milik Anda.');
+        }
+        // Kalau status sudah 'berhasil', langsung redirect ke success
+        if ($row['status'] === 'berhasil') {
+            return redirect()->to('/pencairan/success/' . $id);
+        }
+        $data = [
+            'title'         => 'Pencairan Sedang Diproses — EcoPalu',
+            'unread_count'  => (new DashboardController())->getUnreadCountForCurrentUser(),
+            'notifList'    => (new DashboardController())->getRecentNotifForCurrentUser(10),
+            'pencairan'     => $row,
+        ];
+        return view('pencairan/processing', $data);
+    }
+
+    /**
+     * GET /pencairan/success/{id}
+     * Halaman sukses dengan nomor referensi transfer.
+     */
+    public function success($id)
+    {
+        $userId = (int) (session('user_id') ?? 0);
+        if ($userId <= 0) {
+            return redirect()->to('/login');
+        }
+        $row = $this->pencairanModel->find($id);
+        if (! $row || (int) $row['user_id'] !== $userId) {
+            return redirect()->to('/pencairan')
+                ->with('error', 'Pencairan tidak ditemukan atau bukan milik Anda.');
+        }
+        if ($row['status'] !== 'berhasil') {
+            return redirect()->to('/pencairan/processing/' . $id);
+        }
+        $data = [
+            'title'         => 'Pencairan Berhasil — EcoPalu',
+            'unread_count'  => (new DashboardController())->getUnreadCountForCurrentUser(),
+            'notifList'    => (new DashboardController())->getRecentNotifForCurrentUser(10),
+            'pencairan'     => $row,
+        ];
+        return view('pencairan/success', $data);
+    }
+
+    /**
+     * GET /pencairan/status/{id}
+     * JSON endpoint untuk polling dari frontend (setiap 2 detik).
+     * Return: {status, reference_number, tanggal_transfer}
+     */
+    public function status($id)
+    {
+        $userId = (int) (session('user_id') ?? 0);
+        if ($userId <= 0) {
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'Unauthenticated']);
+        }
+        $row = $this->pencairanModel->find($id);
+        if (! $row || (int) $row['user_id'] !== $userId) {
+            return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
+        }
+        return $this->response->setJSON([
+            'id'                => (int) $row['id'],
+            'status'            => $row['status'],
+            'reference_number'  => $row['reference_number'] ?? $row['alasan_penolakan'] ?? null,
+            'tanggal_transfer'  => $row['tanggal_transfer'],
+            'nominal_rupiah'    => (int) $row['nominal_rupiah'],
+        ]);
+    }
+
+    /**
+     * POST /pencairan/{id}/auto-settle
+     * Auto-trigger settlement (simulasi Midtrans).
+     * Validasi ownership: hanya pemilik pencairan yang boleh trigger.
+     * Filter: role:user (semua role login boleh — termasuk banksampah? tidak
+     * perlu; cukup user biasa yang punya pencairan).
+     */
+    public function autoSettle($id)
+    {
+        $userId = (int) (session('user_id') ?? 0);
+        if ($userId <= 0) {
+            return $this->response->setStatusCode(401)->setJSON(['error' => 'Unauthenticated']);
+        }
+        $row = $this->pencairanModel->find($id);
+        if (! $row) {
+            return $this->response->setStatusCode(404)->setJSON(['error' => 'Not found']);
+        }
+        if ((int) $row['user_id'] !== $userId) {
+            return $this->response->setStatusCode(403)->setJSON([
+                'error' => 'Bukan milik Anda',
+            ]);
+        }
+        if ($row['status'] !== 'diproses') {
+            return $this->response->setJSON([
+                'status'            => $row['status'],
+                'reference_number'  => $row['reference_number'] ?? $row['alasan_penolakan'] ?? null,
+                'tanggal_transfer'  => $row['tanggal_transfer'],
+            ]);
+        }
+        // Simpan reference_number ke kolom dedicated (pencairan_reward.reference_number).
+        // Kolom alasan_penolakan sekarang khusus untuk alasan reject (text).
+        $this->pencairanModel->update($id, [
+            'status'            => 'berhasil',
+            'tanggal_transfer'  => date('Y-m-d H:i:s'),
+        ]);
+
+        insertNotifikasi(
+            $userId,
+            'user',
+            'Pencairan berhasil',
+            'Pencairan Rp ' . number_format((int) $row['nominal_rupiah'], 0, ',', '.') . ' telah ditransfer ke e-wallet Anda.',
+            'pencairan',
+            $id
+        );
+
+        return $this->response->setJSON([
+            'status'            => 'berhasil',
+            'reference_number'  => $row['reference_number'] ?? $row['alasan_penolakan'] ?? null,
+            'tanggal_transfer'  => date('Y-m-d H:i:s'),
+        ]);
     }
 
     /**
@@ -274,16 +426,25 @@ class PencairanController extends BaseController
             'status'            => 'ditolak',
             'alasan_penolakan'  => $alasan,
         ]);
+
+        // Kembalikan saldo coin user (rollback koreksi negatif saat ajukan)
+        $this->coinModel->insert([
+            'user_id'           => (int) $row['user_id'],
+            'kategori_sampah_id' => 1,
+            'berat'             => 0,
+            'total_coin'        => (int) $row['nominal_coin'], // positif = restore
+        ]);
+
         insertNotifikasi(
             $row['user_id'],
             'user',
             'Pencairan ditolak',
-            'Pengajuan pencairan Anda ditolak. Alasan: ' . $alasan,
+            'Pengajuan pencairan Anda ditolak. Alasan: ' . $alasan . ' Saldo coin sudah dikembalikan.',
             'pencairan',
             $id
         );
         return redirect()->to('/pencairan/admin?status=ditolak')
-            ->with('success', 'Pengajuan ditolak.');
+            ->with('success', 'Pengajuan ditolak. Saldo coin user sudah dikembalikan.');
     }
 
     /**

@@ -95,6 +95,7 @@
                                 <th>Nominal</th>
                                 <th>E-wallet</th>
                                 <th>Status</th>
+                                <th width="120">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -127,6 +128,21 @@
                                             <br><small class="text-danger"><?= esc($r['alasan_penolakan']) ?></small>
                                         <?php elseif ($r['status'] === 'berhasil' && ! empty($r['tanggal_transfer'])): ?>
                                             <br><small class="text-muted"><?= esc(formatTanggalIndonesia(substr($r['tanggal_transfer'], 0, 10))) ?></small>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($r['status'] === 'diproses'): ?>
+                                            <a href="<?= base_url('pencairan/processing/' . (int) $r['id']) ?>"
+                                               class="btn btn-sm btn-info text-white">
+                                                <i class="bi bi-eye"></i> Lihat
+                                            </a>
+                                        <?php elseif ($r['status'] === 'berhasil'): ?>
+                                            <a href="<?= base_url('pencairan/success/' . (int) $r['id']) ?>"
+                                               class="btn btn-sm btn-success text-white">
+                                                <i class="bi bi-receipt"></i> Detail
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="text-muted small">—</span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>

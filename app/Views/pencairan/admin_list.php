@@ -127,7 +127,8 @@
                                         <?php elseif ($r['status'] === 'diproses'): ?>
                                             <form method="post" action="<?= base_url('pencairan/'.$r['id'].'/mark-transferred') ?>" class="d-inline">
                                                 <?= csrf_field() ?>
-                                                <button class="btn btn-primary btn-sm" type="submit">
+                                                <button class="btn btn-primary btn-sm" type="submit"
+                                                        title="Normalnya auto-settle via simulasi Midtrans (3 detik). Tombol ini = fallback manual.">
                                                     <i class="bi bi-check2-all"></i> Tandai Selesai
                                                 </button>
                                             </form>
