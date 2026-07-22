@@ -35,10 +35,8 @@ $timeAgo = static function (string $dt): string {
     <div class="notif-header">
         <strong>Notifikasi</strong>
         <?php if (! empty($notifList)): ?>
-            <form action="<?= base_url('notification/mark-all') ?>" method="post" class="m-0">
-                <?= csrf_field() ?>
-                <button type="submit" class="btn btn-link btn-sm p-0 text-decoration-none">Tandai semua dibaca</button>
-            </form>
+            <a href="<?= base_url('notification/mark-all?redirect=' . urlencode(current_url())) ?>"
+               class="small text-decoration-none">Tandai semua dibaca</a>
         <?php endif; ?>
     </div>
 
@@ -49,21 +47,18 @@ $timeAgo = static function (string $dt): string {
             <?php foreach ($notifList as $n): ?>
                 <?php
                     $isUnread = (int) $n['is_read'] === 0;
-                    $action   = base_url('notification/mark/' . (int) $n['id']);
+                    $markUrl  = base_url('notification/mark/' . (int) $n['id'] . '?redirect=' . urlencode(notifTargetUrl($n)));
                 ?>
-                <form action="<?= $action ?>" method="post" class="notif-form">
-                    <?= csrf_field() ?>
-                    <button type="submit" class="notif-item-btn <?= $isUnread ? 'unread' : '' ?>">
-                        <div class="notif-title">
-                            <?php if ($isUnread): ?>
-                                <span class="notif-dot"></span>
-                            <?php endif; ?>
-                            <?= esc($n['judul']) ?>
-                        </div>
-                        <div class="notif-msg"><?= esc($n['pesan']) ?></div>
-                        <div class="notif-time"><?= esc($timeAgo($n['created_at'])) ?></div>
-                    </button>
-                </form>
+                <a href="<?= $markUrl ?>" class="notif-item <?= $isUnread ? 'unread' : '' ?>">
+                    <div class="notif-title">
+                        <?php if ($isUnread): ?>
+                            <span class="notif-dot"></span>
+                        <?php endif; ?>
+                        <?= esc($n['judul']) ?>
+                    </div>
+                    <div class="notif-msg"><?= esc($n['pesan']) ?></div>
+                    <div class="notif-time"><?= esc($timeAgo($n['created_at'])) ?></div>
+                </a>
             <?php endforeach; ?>
         <?php endif; ?>
     </div>
@@ -106,7 +101,7 @@ $timeAgo = static function (string $dt): string {
     .notif-form {
         margin: 0;
     }
-    .notif-item-btn {
+    .notif-item {
         display: block;
         width: 100%;
         text-align: left;
@@ -119,13 +114,13 @@ $timeAgo = static function (string $dt): string {
         transition: background 0.15s;
         font-family: inherit;
     }
-    .notif-item-btn:hover {
+    .notif-item:hover {
         background: #f8fafc;
     }
-    .notif-item-btn.unread {
+    .notif-item.unread {
         background: #f0fdf4;
     }
-    .notif-item-btn.unread:hover {
+    .notif-item.unread:hover {
         background: #dcfce7;
     }
     .notif-title {

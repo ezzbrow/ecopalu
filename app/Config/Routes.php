@@ -87,9 +87,11 @@ $routes->get('/dashboard/banksampah', 'DashboardController::banksampah', ['filte
 // =====================
 // NOTIFIKASI (read/unread per klik)
 // =====================
-// POST + CSRF untuk cegah state-changing via GET (konsisten dengan pola logout POST)
-$routes->post('/notification/mark/(:num)', 'NotificationController::markRead/$1', ['filter' => 'auth']);
-$routes->post('/notification/mark-all',    'NotificationController::markAllRead', ['filter' => 'auth']);
+// GET agar navigasi dari notifikasi langsung redirect ke target (link <a>).
+// Aksi cuma update is_read=1, no state-changing penting — validasi
+// ownership ketat di model.
+$routes->get('/notification/mark/(:num)', 'NotificationController::markRead/$1', ['filter' => 'auth']);
+$routes->get('/notification/mark-all',    'NotificationController::markAllRead', ['filter' => 'auth']);
 
 
 // =====================

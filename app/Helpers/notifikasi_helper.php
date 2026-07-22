@@ -95,6 +95,40 @@ if (! function_exists('rateCoinToRupiah')) {
     }
 }
 
+if (! function_exists('notifTargetUrl')) {
+    /**
+     * Tentukan URL target untuk sebuah notifikasi berdasarkan tipe & ref_id.
+     * Dipakai untuk navigasi saat user klik notifikasi di topbar.
+     *
+     * @param array $notif  row notifikasi (recipient_role, tipe, ref_id)
+     * @return string       URL target
+     */
+    function notifTargetUrl(array $notif): string
+    {
+        $role   = (string) ($notif['recipient_role'] ?? '');
+        $tipe   = (string) ($notif['tipe'] ?? '');
+        $refId  = (int) ($notif['ref_id'] ?? 0);
+
+        // Default: dashboard sesuai role
+        $default = match ($role) {
+            'admin'       => '/dashboard/admin',
+            'banksampah'  => '/dashboard/banksampah',
+            default       => '/dashboard/user',
+        };
+
+        if ($refId <= 0) {
+            return $default;
+        }
+
+        return match ($tipe) {
+            'penjemputan' => '/penjemputan?role=' . $role,
+            'pencairan'   => $role === 'admin' ? '/pencairan/admin' : '/pencairan',
+            'poin'        => '/penjemputan?role=' . $role,
+            default       => $default,
+        };
+    }
+}
+
 if (! function_exists('formatTanggalIndonesia')) {
     function formatTanggalIndonesia(string $date): string
     {

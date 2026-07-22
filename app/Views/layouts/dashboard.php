@@ -228,7 +228,7 @@
             <i class="bi bi-truck"></i> Daftar Penjemputan
         </a>
         <div class="nav-section">Reward & Pencairan</div>
-        <a class="nav-link" href="#pencairan">
+        <a class="nav-link <?= $isActive('/pencairan/admin') || $isActive('/pencairan') ? 'active' : '' ?>" href="<?= base_url('pencairan/admin') ?>">
             <i class="bi bi-cash-stack"></i> Pencairan Reward
         </a>
         <div class="nav-section">Manajemen</div>
@@ -242,10 +242,10 @@
             <i class="bi bi-coin"></i> Transaksi Coin
         </a>
         <div class="nav-section">Akun</div>
-        <a class="nav-link" href="#kalender">
+        <a class="nav-link" href="<?= base_url('dashboard/admin') ?>#kalender">
             <i class="bi bi-calendar-week"></i> Kalender
         </a>
-        <a class="nav-link" href="#ubah-password">
+        <a class="nav-link <?= $isActive('/password/change') ? 'active' : '' ?>" href="<?= base_url('password/change') ?>">
             <i class="bi bi-key"></i> Ubah Password
         </a>
     <?php endif; ?>

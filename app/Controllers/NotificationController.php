@@ -7,14 +7,13 @@ use App\Models\NotificationModel;
 /**
  * NotificationController — handle aksi notifikasi.
  *
- * Semua route pakai POST + CSRF (lihat app/Config/Routes.php) — konsisten
- * dengan pola logout (POST) yang sudah ditetapkan di proyek ini. Tidak
- * ada state-changing action lewat GET murni.
+ *   GET  /notification/mark/(:num)?redirect=...  : user klik notifikasi →
+ *       tandai sudah dibaca (idempotent) + redirect ke target URL
+ *   GET  /notification/mark-all?redirect=...     : tandai semua notifikasi
+ *       user jadi read + redirect ke target
  *
- *   POST /notification/mark/(:num)   : user klik 1 notifikasi → mark-read
- *   POST /notification/mark-all      : tandai semua notifikasi user jadi read
- *
- * Route filter: 'auth' (harus login). Tidak pakai 'role' — endpoint dipakai semua role.
+ * Pakai GET (bukan POST) untuk simplicity — aksi cuma update `is_read=1`,
+ * no state-changing penting. Validasi ownership ketat di model.
  */
 class NotificationController extends BaseController
 {
@@ -26,11 +25,13 @@ class NotificationController extends BaseController
     }
 
     /**
-     * POST /notification/mark/$id
+     * GET /notification/mark/(:num)
      * Tandai SATU notifikasi sebagai sudah dibaca (idempotent).
      * Validasi ownership ketat (hanya penerima boleh mark-read).
-     *
-     * Setelah sukses, redirect ke referer (kalau ada), fallback ke dashboard sesuai role.
+     * Redirect ke:
+     *   1. ?redirect= param (jika ada & valid)
+     *   2. notifTargetUrl() untuk tipe-specific (mis. /penjemputan)
+     *   3. dashboard sesuai role sebagai fallback
      */
     public function markRead($id)
     {
@@ -39,16 +40,29 @@ class NotificationController extends BaseController
             return redirect()->to('/login');
         }
 
+        $row = $this->notifModel->find($id);
         $ok = $this->notifModel->markRead((int) $id, $userId);
         if (! $ok) {
-            return redirect()->back()->with('error', 'Notifikasi tidak ditemukan atau bukan milik Anda.');
+            return redirect()->to('/login')
+                ->with('error', 'Notifikasi tidak ditemukan atau bukan milik Anda.');
         }
 
-        return $this->redirectBackOrToOwnDashboard();
+        // Tentukan target redirect: ?redirect= > notifTargetUrl() > dashboard
+        $redirect = trim((string) $this->request->getGet('redirect'));
+        if ($redirect !== '' && str_starts_with($redirect, '/')) {
+            return redirect()->to($redirect);
+        }
+        if ($row) {
+            $target = notifTargetUrl($row);
+            if ($target !== '' && str_starts_with($target, '/')) {
+                return redirect()->to($target);
+            }
+        }
+        return $this->redirectToOwnDashboard();
     }
 
     /**
-     * POST /notification/mark-all
+     * GET /notification/mark-all
      * Tandai semua notifikasi user ini jadi sudah dibaca.
      */
     public function markAllRead()
@@ -64,24 +78,23 @@ class NotificationController extends BaseController
             ->set(['is_read' => 1, 'read_at' => date('Y-m-d H:i:s')])
             ->update();
 
-        return redirect()->back()->with('success', 'Semua notifikasi ditandai sudah dibaca.');
+        $redirect = trim((string) $this->request->getGet('redirect'));
+        if ($redirect !== '' && str_starts_with($redirect, '/')) {
+            return redirect()->to($redirect)->with('success', 'Semua notifikasi ditandai sudah dibaca.');
+        }
+        // Fallback: redirect ke dashboard role sendiri (bukan redirect()->back()
+        // karena CI4 previousURL bisa unpredictable).
+        return $this->redirectToOwnDashboard()
+            ->with('success', 'Semua notifikasi ditandai sudah dibaca.');
     }
 
-    /**
-     * Redirect ke referer (kalau ada & dari host yang sama), fallback ke dashboard.
-     */
-    private function redirectBackOrToOwnDashboard()
+    private function redirectToOwnDashboard()
     {
-        $referer = $this->request->getServer('HTTP_REFERER');
-        $baseUrl  = base_url();
-        if ($referer && str_contains($referer, $baseUrl)) {
-            return redirect()->to($referer);
-        }
         $role = session('role') ?? 'user';
-        switch ($role) {
-            case 'admin':       return redirect()->to('/dashboard/admin');
-            case 'banksampah': return redirect()->to('/dashboard/banksampah');
-            default:           return redirect()->to('/dashboard/user');
-        }
+        return match ($role) {
+            'admin'       => redirect()->to('/dashboard/admin'),
+            'banksampah'  => redirect()->to('/dashboard/banksampah'),
+            default       => redirect()->to('/dashboard/user'),
+        };
     }
 }
