@@ -241,6 +241,10 @@
         <a class="nav-link <?= $isActive('/transaksi-coin') ? 'active' : '' ?>" href="<?= base_url('transaksi-coin') ?>">
             <i class="bi bi-coin"></i> Transaksi Coin
         </a>
+        <div class="nav-section">Kecerdasan Buatan</div>
+        <a class="nav-link <?= $isActive('/admin/data-mining') ? 'active' : '' ?>" href="<?= base_url('admin/data-mining') ?>">
+            <i class="bi bi-cpu"></i> Data Mining Center
+        </a>
         <div class="nav-section">Akun</div>
         <a class="nav-link" href="<?= base_url('dashboard/admin') ?>#kalender">
             <i class="bi bi-calendar-week"></i> Kalender

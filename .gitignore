@@ -129,3 +129,8 @@ _modules/*
 # Local Database Backups
 #-------------------------
 backup_*.sql
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class

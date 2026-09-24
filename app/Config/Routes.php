@@ -126,6 +126,12 @@ $routes->get('/pencairan/admin',                                           'Penc
 $routes->post('/pencairan/(:num)/approve',                                 'PencairanController::approve/$1',     ['filter' => ['auth', 'role:admin']]);
 $routes->post('/pencairan/(:num)/mark-transferred',                        'PencairanController::markTransferred/$1', ['filter' => ['auth', 'role:admin']]);
 $routes->post('/pencairan/(:num)/reject',                                 'PencairanController::reject/$1',      ['filter' => ['auth', 'role:admin']]);
+
+// =====================
+// DATA MINING CENTER (Admin only)
+// =====================
+$routes->get('/admin/data-mining',       'DataMiningController::index', ['filter' => ['auth', 'role:admin']]);
+$routes->post('/admin/data-mining/run',  'DataMiningController::run',   ['filter' => ['auth', 'role:admin']]);
 // =====================================================
 // DEV-ONLY: Auto-login admin (hanya aktif di development)
 // =====================================================
